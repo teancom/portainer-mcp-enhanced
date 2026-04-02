@@ -8,6 +8,7 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/jmrplens/portainer-mcp-enhanced/internal/tooldef"
 	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/client"
 	"github.com/jmrplens/portainer-mcp-enhanced/pkg/toolgen"
 	"github.com/mark3labs/mcp-go/mcp"
@@ -146,7 +147,15 @@ func NewPortainerMCPServer(serverURL, token, toolsPath string, options ...Server
 		option(opts)
 	}
 
-	tools, err := toolgen.LoadToolsFromYAML(toolsPath, MinimumToolsVersion)
+	var (
+		tools map[string]mcp.Tool
+		err   error
+	)
+	if toolsPath != "" {
+		tools, err = toolgen.LoadToolsFromYAML(toolsPath, MinimumToolsVersion)
+	} else {
+		tools, err = toolgen.LoadToolsFromBytes(tooldef.ToolsFile, MinimumToolsVersion)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to load tools: %w", err)
 	}

@@ -263,6 +263,59 @@ tools:
 	return path
 }
 
+// TestLoadToolsFromBytes verifies that tools can be loaded directly from
+// embedded bytes without touching the filesystem.
+func TestLoadToolsFromBytes(t *testing.T) {
+	yamlContent := []byte(`version: "v1.0.0"
+tools:
+  - name: testTool
+    description: A test tool
+    parameters:
+      - name: param1
+        type: string
+        required: true
+        description: A test parameter
+    annotations:
+      title: Test Tool Title
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: false`)
+
+	t.Run("loads tools from bytes", func(t *testing.T) {
+		tools, err := LoadToolsFromBytes(yamlContent, "v1.0")
+		assert.NoError(t, err)
+		assert.Len(t, tools, 1)
+		assert.Contains(t, tools, "testTool")
+	})
+
+	t.Run("rejects old version", func(t *testing.T) {
+		_, err := LoadToolsFromBytes(yamlContent, "v2.0")
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "version")
+	})
+
+	t.Run("rejects invalid yaml", func(t *testing.T) {
+		_, err := LoadToolsFromBytes([]byte("not: [valid yaml content"), "v1.0")
+		assert.Error(t, err)
+	})
+
+	t.Run("does not write to filesystem", func(t *testing.T) {
+		// Run in a read-only temp dir to prove no filesystem writes happen
+		readOnlyDir := t.TempDir()
+		os.Chmod(readOnlyDir, 0555)
+		defer os.Chmod(readOnlyDir, 0755)
+
+		origDir, _ := os.Getwd()
+		os.Chdir(readOnlyDir)
+		defer os.Chdir(origDir)
+
+		tools, err := LoadToolsFromBytes(yamlContent, "v1.0")
+		assert.NoError(t, err)
+		assert.Len(t, tools, 1)
+	})
+}
+
 // TestConvertToolDefinition verifies the ConvertToolDefinition model conversion function.
 func TestConvertToolDefinition(t *testing.T) {
 	// Define a valid annotation struct to reuse
