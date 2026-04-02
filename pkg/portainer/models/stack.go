@@ -3,8 +3,8 @@ package models
 import (
 	"time"
 
-	apimodels "github.com/portainer/client-api-go/v2/pkg/models"
 	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/utils"
+	apimodels "github.com/portainer/client-api-go/v2/pkg/models"
 )
 
 // Stack represents a Portainer edge stack deployed via edge groups.
@@ -43,6 +43,26 @@ type RegularStack struct {
 	CreatedBy      string `json:"created_by,omitempty"`
 	CreatedAt      string `json:"created_at,omitempty"`
 	FilesystemPath string `json:"filesystem_path,omitempty"`
+}
+
+// DeleteStackOptions configures stack deletion behavior.
+type DeleteStackOptions struct {
+	EndpointID    int
+	RemoveVolumes bool
+}
+
+// UpdateStackGitOptions configures git update behavior for a stack.
+type UpdateStackGitOptions struct {
+	EndpointID    int
+	ReferenceName string
+	Prune         bool
+}
+
+// RedeployStackGitOptions configures git redeployment behavior for a stack.
+type RedeployStackGitOptions struct {
+	EndpointID int
+	PullImage  bool
+	Prune      bool
 }
 
 // ConvertRegularStack converts a raw PortainereeStack to a RegularStack

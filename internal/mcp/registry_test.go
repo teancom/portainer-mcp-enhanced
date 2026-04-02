@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
+	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -107,6 +107,20 @@ func TestHandleGetRegistry(t *testing.T) {
 			expectError: true,
 			setupParams: func(request *mcp.CallToolRequest) {},
 		},
+		{
+			name:        "zero id rejected",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{"id": float64(0)}
+			},
+		},
+		{
+			name:        "negative id rejected",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{"id": float64(-1)}
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -193,6 +207,63 @@ func TestHandleCreateRegistry(t *testing.T) {
 					"type":           float64(3),
 					"url":            "registry.example.com",
 					"authentication": false,
+				}
+			},
+		},
+		{
+			name:        "missing type parameter",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{
+					"name":           "MyRegistry",
+					"url":            "registry.example.com",
+					"authentication": false,
+				}
+			},
+		},
+		{
+			name:        "invalid registry type",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{
+					"name":           "MyRegistry",
+					"type":           float64(99),
+					"url":            "registry.example.com",
+					"authentication": false,
+				}
+			},
+		},
+		{
+			name:        "missing url parameter",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{
+					"name":           "MyRegistry",
+					"type":           float64(3),
+					"authentication": false,
+				}
+			},
+		},
+		{
+			name:        "invalid url scheme",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{
+					"name":           "MyRegistry",
+					"type":           float64(3),
+					"url":            "ftp://registry.example.com",
+					"authentication": false,
+				}
+			},
+		},
+		{
+			name:        "missing authentication parameter",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{
+					"name": "MyRegistry",
+					"type": float64(3),
+					"url":  "registry.example.com",
 				}
 			},
 		},
@@ -306,6 +377,105 @@ func TestHandleUpdateRegistry(t *testing.T) {
 			},
 			verifyMock: func(t *testing.T, mockClient *MockPortainerClient) {},
 		},
+		{
+			name:        "zero id rejected",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{
+					"id":   float64(0),
+					"name": "ZeroID",
+				}
+			},
+			verifyMock: func(t *testing.T, mockClient *MockPortainerClient) {},
+		},
+		{
+			name:        "negative id rejected",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{
+					"id":   float64(-1),
+					"name": "NegativeID",
+				}
+			},
+			verifyMock: func(t *testing.T, mockClient *MockPortainerClient) {},
+		},
+		{
+			name:        "invalid name type",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{
+					"id":   float64(1),
+					"name": true,
+				}
+			},
+			verifyMock: func(t *testing.T, mockClient *MockPortainerClient) {},
+		},
+		{
+			name:        "invalid url type",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{
+					"id":  float64(1),
+					"url": true,
+				}
+			},
+			verifyMock: func(t *testing.T, mockClient *MockPortainerClient) {},
+		},
+		{
+			name:        "invalid url scheme in update",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{
+					"id":  float64(1),
+					"url": "ftp://registry.example.com",
+				}
+			},
+			verifyMock: func(t *testing.T, mockClient *MockPortainerClient) {},
+		},
+		{
+			name:        "invalid authentication type",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{
+					"id":             float64(1),
+					"authentication": "yes",
+				}
+			},
+			verifyMock: func(t *testing.T, mockClient *MockPortainerClient) {},
+		},
+		{
+			name:        "invalid username type",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{
+					"id":       float64(1),
+					"username": true,
+				}
+			},
+			verifyMock: func(t *testing.T, mockClient *MockPortainerClient) {},
+		},
+		{
+			name:        "invalid password type",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{
+					"id":       float64(1),
+					"password": true,
+				}
+			},
+			verifyMock: func(t *testing.T, mockClient *MockPortainerClient) {},
+		},
+		{
+			name:        "invalid baseURL type",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{
+					"id":      float64(1),
+					"baseURL": true,
+				}
+			},
+			verifyMock: func(t *testing.T, mockClient *MockPortainerClient) {},
+		},
 	}
 
 	for _, tt := range tests {
@@ -369,6 +539,20 @@ func TestHandleDeleteRegistry(t *testing.T) {
 			name:        "missing id parameter",
 			expectError: true,
 			setupParams: func(request *mcp.CallToolRequest) {},
+		},
+		{
+			name:        "zero id rejected",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{"id": float64(0)}
+			},
+		},
+		{
+			name:        "negative id rejected",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{"id": float64(-1)}
+			},
 		},
 	}
 

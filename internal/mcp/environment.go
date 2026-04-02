@@ -3,9 +3,9 @@ package mcp
 import (
 	"context"
 
+	"github.com/jmrplens/portainer-mcp-enhanced/pkg/toolgen"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
-	"github.com/jmrplens/portainer-mcp-enhanced/pkg/toolgen"
 )
 
 // AddEnvironmentFeatures registers the environment (endpoint) management tools on the MCP server.

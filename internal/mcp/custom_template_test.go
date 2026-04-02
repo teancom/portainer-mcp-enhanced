@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
+	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -107,6 +107,13 @@ func TestHandleGetCustomTemplate(t *testing.T) {
 			expectError: true,
 			setupParams: func(request *mcp.CallToolRequest) {},
 		},
+		{
+			name:        "invalid id (zero)",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{"id": float64(0)}
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -178,6 +185,13 @@ func TestHandleGetCustomTemplateFile(t *testing.T) {
 			name:        "missing id parameter",
 			expectError: true,
 			setupParams: func(request *mcp.CallToolRequest) {},
+		},
+		{
+			name:        "invalid id (zero)",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{"id": float64(0)}
+			},
 		},
 	}
 
@@ -266,6 +280,67 @@ func TestHandleCreateCustomTemplate(t *testing.T) {
 				}
 			},
 		},
+		{
+			name:        "missing description parameter",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{
+					"title":       "My Template",
+					"fileContent": "content",
+					"type":        float64(2),
+					"platform":    float64(1),
+				}
+			},
+		},
+		{
+			name:        "missing fileContent parameter",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{
+					"title":       "My Template",
+					"description": "A template",
+					"type":        float64(2),
+					"platform":    float64(1),
+				}
+			},
+		},
+		{
+			name:        "missing type parameter",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{
+					"title":       "My Template",
+					"description": "A template",
+					"fileContent": "content",
+					"platform":    float64(1),
+				}
+			},
+		},
+		{
+			name:        "invalid template type",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{
+					"title":       "My Template",
+					"description": "A template",
+					"fileContent": "content",
+					"type":        float64(9),
+					"platform":    float64(1),
+				}
+			},
+		},
+		{
+			name:        "missing platform parameter",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{
+					"title":       "My Template",
+					"description": "A template",
+					"fileContent": "content",
+					"type":        float64(2),
+				}
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -333,6 +408,13 @@ func TestHandleDeleteCustomTemplate(t *testing.T) {
 			name:        "missing id parameter",
 			expectError: true,
 			setupParams: func(request *mcp.CallToolRequest) {},
+		},
+		{
+			name:        "invalid id (zero)",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{"id": float64(0)}
+			},
 		},
 	}
 

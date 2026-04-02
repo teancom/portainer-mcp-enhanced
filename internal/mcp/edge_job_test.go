@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
+	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -107,6 +107,13 @@ func TestHandleGetEdgeJob(t *testing.T) {
 			expectError: true,
 			setupParams: func(request *mcp.CallToolRequest) {},
 		},
+		{
+			name:        "invalid id (zero)",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{"id": float64(0)}
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -178,6 +185,13 @@ func TestHandleGetEdgeJobFile(t *testing.T) {
 			name:        "missing id parameter",
 			expectError: true,
 			setupParams: func(request *mcp.CallToolRequest) {},
+		},
+		{
+			name:        "invalid id (zero)",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{"id": float64(0)}
+			},
 		},
 	}
 
@@ -261,6 +275,37 @@ func TestHandleCreateEdgeJob(t *testing.T) {
 				}
 			},
 		},
+		{
+			name:        "missing cronExpression parameter",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{
+					"name":        "My Job",
+					"fileContent": "content",
+				}
+			},
+		},
+		{
+			name:        "invalid cron expression",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{
+					"name":           "My Job",
+					"cronExpression": "* * *",
+					"fileContent":    "content",
+				}
+			},
+		},
+		{
+			name:        "missing fileContent parameter",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{
+					"name":           "My Job",
+					"cronExpression": "* * * * *",
+				}
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -328,6 +373,13 @@ func TestHandleDeleteEdgeJob(t *testing.T) {
 			name:        "missing id parameter",
 			expectError: true,
 			setupParams: func(request *mcp.CallToolRequest) {},
+		},
+		{
+			name:        "invalid id (zero)",
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{"id": float64(0)}
+			},
 		},
 	}
 

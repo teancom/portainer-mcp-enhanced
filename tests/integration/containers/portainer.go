@@ -14,11 +14,11 @@ import (
 	"github.com/go-openapi/runtime"
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
+	"github.com/jmrplens/portainer-mcp-enhanced/internal/mcp"
 	"github.com/portainer/client-api-go/v2/pkg/client"
 	"github.com/portainer/client-api-go/v2/pkg/client/auth"
 	"github.com/portainer/client-api-go/v2/pkg/client/users"
 	"github.com/portainer/client-api-go/v2/pkg/models"
-	"github.com/jmrplens/portainer-mcp-enhanced/internal/mcp"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 )

@@ -76,6 +76,9 @@ func (m *MockPortainerClient) GetEnvironments() ([]models.Environment, error) {
 
 func (m *MockPortainerClient) GetEnvironment(id int) (models.Environment, error) {
 	args := m.Called(id)
+	if args.Get(0) == nil {
+		return models.Environment{}, args.Error(1)
+	}
 	return args.Get(0).(models.Environment), args.Error(1)
 }
 
@@ -220,8 +223,8 @@ func (m *MockPortainerClient) InspectStack(id int) (models.RegularStack, error) 
 	return args.Get(0).(models.RegularStack), args.Error(1)
 }
 
-func (m *MockPortainerClient) DeleteStack(id int, endpointID int, removeVolumes bool) error {
-	args := m.Called(id, endpointID, removeVolumes)
+func (m *MockPortainerClient) DeleteStack(id int, opts models.DeleteStackOptions) error {
+	args := m.Called(id, opts)
 	return args.Error(0)
 }
 
@@ -230,16 +233,16 @@ func (m *MockPortainerClient) InspectStackFile(id int) (string, error) {
 	return args.String(0), args.Error(1)
 }
 
-func (m *MockPortainerClient) UpdateStackGit(id int, endpointID int, referenceName string, prune bool) (models.RegularStack, error) {
-	args := m.Called(id, endpointID, referenceName, prune)
+func (m *MockPortainerClient) UpdateStackGit(id int, opts models.UpdateStackGitOptions) (models.RegularStack, error) {
+	args := m.Called(id, opts)
 	if args.Get(0) == nil {
 		return models.RegularStack{}, args.Error(1)
 	}
 	return args.Get(0).(models.RegularStack), args.Error(1)
 }
 
-func (m *MockPortainerClient) RedeployStackGit(id int, endpointID int, pullImage bool, prune bool) (models.RegularStack, error) {
-	args := m.Called(id, endpointID, pullImage, prune)
+func (m *MockPortainerClient) RedeployStackGit(id int, opts models.RedeployStackGitOptions) (models.RegularStack, error) {
+	args := m.Called(id, opts)
 	if args.Get(0) == nil {
 		return models.RegularStack{}, args.Error(1)
 	}
@@ -397,6 +400,9 @@ func (m *MockPortainerClient) GetAppTemplates() ([]models.AppTemplate, error) {
 
 func (m *MockPortainerClient) GetAppTemplateFile(id int) (string, error) {
 	args := m.Called(id)
+	if args.Get(0) == nil {
+		return "", args.Error(1)
+	}
 	return args.Get(0).(string), args.Error(1)
 }
 
@@ -419,6 +425,9 @@ func (m *MockPortainerClient) ProxyDockerRequest(opts models.DockerProxyRequestO
 
 func (m *MockPortainerClient) GetDockerDashboard(environmentId int) (models.DockerDashboard, error) {
 	args := m.Called(environmentId)
+	if args.Get(0) == nil {
+		return models.DockerDashboard{}, args.Error(1)
+	}
 	return args.Get(0).(models.DockerDashboard), args.Error(1)
 }
 
@@ -433,6 +442,9 @@ func (m *MockPortainerClient) ProxyKubernetesRequest(opts models.KubernetesProxy
 
 func (m *MockPortainerClient) GetKubernetesDashboard(environmentId int) (models.KubernetesDashboard, error) {
 	args := m.Called(environmentId)
+	if args.Get(0) == nil {
+		return models.KubernetesDashboard{}, args.Error(1)
+	}
 	return args.Get(0).(models.KubernetesDashboard), args.Error(1)
 }
 
@@ -461,6 +473,9 @@ func (m *MockPortainerClient) GetCustomTemplates() ([]models.CustomTemplate, err
 
 func (m *MockPortainerClient) GetCustomTemplate(id int) (models.CustomTemplate, error) {
 	args := m.Called(id)
+	if args.Get(0) == nil {
+		return models.CustomTemplate{}, args.Error(1)
+	}
 	return args.Get(0).(models.CustomTemplate), args.Error(1)
 }
 
@@ -511,6 +526,9 @@ func (m *MockPortainerClient) GetRegistries() ([]models.Registry, error) {
 
 func (m *MockPortainerClient) GetRegistry(id int) (models.Registry, error) {
 	args := m.Called(id)
+	if args.Get(0) == nil {
+		return models.Registry{}, args.Error(1)
+	}
 	return args.Get(0).(models.Registry), args.Error(1)
 }
 
@@ -629,6 +647,9 @@ func (m *MockPortainerClient) GetEdgeUpdateSchedules() ([]models.EdgeUpdateSched
 
 func (m *MockPortainerClient) AuthenticateUser(username, password string) (models.AuthResponse, error) {
 	args := m.Called(username, password)
+	if args.Get(0) == nil {
+		return models.AuthResponse{}, args.Error(1)
+	}
 	return args.Get(0).(models.AuthResponse), args.Error(1)
 }
 
@@ -641,11 +662,17 @@ func (m *MockPortainerClient) Logout() error {
 
 func (m *MockPortainerClient) GetHelmRepositories(userId int) (models.HelmRepositoryList, error) {
 	args := m.Called(userId)
+	if args.Get(0) == nil {
+		return models.HelmRepositoryList{}, args.Error(1)
+	}
 	return args.Get(0).(models.HelmRepositoryList), args.Error(1)
 }
 
 func (m *MockPortainerClient) CreateHelmRepository(userId int, url string) (models.HelmRepository, error) {
 	args := m.Called(userId, url)
+	if args.Get(0) == nil {
+		return models.HelmRepository{}, args.Error(1)
+	}
 	return args.Get(0).(models.HelmRepository), args.Error(1)
 }
 
@@ -661,6 +688,9 @@ func (m *MockPortainerClient) SearchHelmCharts(repo string, chart string) (strin
 
 func (m *MockPortainerClient) InstallHelmChart(environmentId int, chart, name, namespace, repo, values, version string) (models.HelmReleaseDetails, error) {
 	args := m.Called(environmentId, chart, name, namespace, repo, values, version)
+	if args.Get(0) == nil {
+		return models.HelmReleaseDetails{}, args.Error(1)
+	}
 	return args.Get(0).(models.HelmReleaseDetails), args.Error(1)
 }
 

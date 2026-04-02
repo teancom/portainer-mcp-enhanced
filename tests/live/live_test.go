@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/jmrplens/portainer-mcp-enhanced/internal/mcp"
 	mcpgo "github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
-	"github.com/jmrplens/portainer-mcp-enhanced/internal/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

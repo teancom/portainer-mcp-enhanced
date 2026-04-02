@@ -3,8 +3,8 @@ package client
 import (
 	"fmt"
 
-	apimodels "github.com/portainer/client-api-go/v2/pkg/models"
 	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
+	apimodels "github.com/portainer/client-api-go/v2/pkg/models"
 )
 
 // GetBackupStatus retrieves the status of the last backup.

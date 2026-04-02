@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
+	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -128,6 +128,18 @@ func TestHandleCreateEnvironmentGroup(t *testing.T) {
 			},
 		},
 		{
+			name:        "invalid name - whitespace only",
+			inputEnvIDs: []int{1, 2, 3},
+			mockError:   nil,
+			expectError: true,
+			setupParams: func(request *mcp.CallToolRequest) {
+				request.Params.Arguments = map[string]any{
+					"name":           "  ",
+					"environmentIds": []any{float64(1), float64(2), float64(3)},
+				}
+			},
+		},
+		{
 			name:        "missing environmentIds parameter",
 			inputName:   "group1",
 			mockError:   nil,
@@ -240,6 +252,19 @@ func TestHandleUpdateEnvironmentGroupName(t *testing.T) {
 			setupParams: func(request mcp.CallToolRequest) mcp.CallToolRequest {
 				request.Params.Arguments = map[string]any{
 					"id": float64(1),
+				}
+				return request
+			},
+		},
+		{
+			name:        "invalid name - whitespace only",
+			inputID:     1,
+			mockError:   nil,
+			expectError: true,
+			setupParams: func(request mcp.CallToolRequest) mcp.CallToolRequest {
+				request.Params.Arguments = map[string]any{
+					"id":   float64(1),
+					"name": "  ",
 				}
 				return request
 			},

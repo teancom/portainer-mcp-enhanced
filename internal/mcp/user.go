@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/jmrplens/portainer-mcp-enhanced/pkg/toolgen"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
-	"github.com/jmrplens/portainer-mcp-enhanced/pkg/toolgen"
 )
 
 // AddUserFeatures registers the user management tools on the MCP server.

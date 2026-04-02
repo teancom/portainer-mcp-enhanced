@@ -3,9 +3,12 @@ package mcp
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
 	"net/url"
 	"strings"
 
+	"github.com/jmrplens/portainer-mcp-enhanced/pkg/toolgen"
 	"github.com/mark3labs/mcp-go/mcp"
 	"gopkg.in/yaml.v3"
 )
@@ -118,6 +121,101 @@ func parseKeyValueMap(items []any) (map[string]string, error) {
 	}
 
 	return resultMap, nil
+}
+
+// proxyParams holds the parsed parameters common to full proxy API requests
+// (Docker and Kubernetes).
+type proxyParams struct {
+	environmentID int
+	method        string
+	apiPath       string
+	queryParams   map[string]string
+	headers       map[string]string
+	body          string
+}
+
+// parseProxyParams extracts the common parameter set used by Docker and Kubernetes
+// proxy handlers. pathParamName is the request field name for the API path
+// (e.g. "dockerAPIPath" or "kubernetesAPIPath"). Returns parsed params or a tool
+// error result that the handler should return immediately.
+func parseProxyParams(request mcp.CallToolRequest, pathParamName string) (*proxyParams, *mcp.CallToolResult) {
+	parser := toolgen.NewParameterParser(request)
+
+	environmentID, err := parser.GetInt("environmentId", true)
+	if err != nil {
+		return nil, mcp.NewToolResultErrorFromErr("invalid environmentId parameter", err)
+	}
+	if err := validatePositiveID("environmentId", environmentID); err != nil {
+		return nil, mcp.NewToolResultError(err.Error())
+	}
+
+	method, err := parser.GetString("method", true)
+	if err != nil {
+		return nil, mcp.NewToolResultErrorFromErr("invalid method parameter", err)
+	}
+	if !isValidHTTPMethod(method) {
+		return nil, mcp.NewToolResultError(fmt.Sprintf("invalid method: %s", method))
+	}
+
+	apiPath, err := parser.GetString(pathParamName, true)
+	if err != nil {
+		return nil, mcp.NewToolResultErrorFromErr(fmt.Sprintf("invalid %s parameter", pathParamName), err)
+	}
+	if !strings.HasPrefix(apiPath, "/") {
+		return nil, mcp.NewToolResultError(fmt.Sprintf("%s must start with a leading slash", pathParamName))
+	}
+	decoded, err := url.PathUnescape(apiPath)
+	if err != nil {
+		return nil, mcp.NewToolResultError(fmt.Sprintf("%s contains invalid URL encoding", pathParamName))
+	}
+	if strings.Contains(decoded, "..") {
+		return nil, mcp.NewToolResultError(fmt.Sprintf("%s must not contain path traversal sequences", pathParamName))
+	}
+
+	queryParams, err := parser.GetArrayOfObjects("queryParams", false)
+	if err != nil {
+		return nil, mcp.NewToolResultErrorFromErr("invalid queryParams parameter", err)
+	}
+	queryParamsMap, err := parseKeyValueMap(queryParams)
+	if err != nil {
+		return nil, mcp.NewToolResultErrorFromErr("invalid query params", err)
+	}
+
+	hdrs, err := parser.GetArrayOfObjects("headers", false)
+	if err != nil {
+		return nil, mcp.NewToolResultErrorFromErr("invalid headers parameter", err)
+	}
+	headersMap, err := parseKeyValueMap(hdrs)
+	if err != nil {
+		return nil, mcp.NewToolResultErrorFromErr("invalid headers", err)
+	}
+
+	body, err := parser.GetString("body", false)
+	if err != nil {
+		return nil, mcp.NewToolResultErrorFromErr("invalid body parameter", err)
+	}
+
+	return &proxyParams{
+		environmentID: environmentID,
+		method:        method,
+		apiPath:       apiPath,
+		queryParams:   queryParamsMap,
+		headers:       headersMap,
+		body:          body,
+	}, nil
+}
+
+// readProxyResponse reads a proxy HTTP response body up to maxProxyResponseSize
+// and returns it as an MCP tool result.
+func readProxyResponse(response *http.Response, apiName string) (*mcp.CallToolResult, error) {
+	defer response.Body.Close()
+
+	responseBody, err := io.ReadAll(io.LimitReader(response.Body, maxProxyResponseSize))
+	if err != nil {
+		return mcp.NewToolResultErrorFromErr(fmt.Sprintf("failed to read %s API response", apiName), err), nil
+	}
+
+	return mcp.NewToolResultText(string(responseBody)), nil
 }
 
 // CreateMCPRequest creates a new MCP tool request with the given arguments.
