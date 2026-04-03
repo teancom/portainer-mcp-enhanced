@@ -227,9 +227,14 @@ func parseProxyParams(request mcp.CallToolRequest, pathParamName string) (*proxy
 func readProxyResponse(response *http.Response, apiName string) (*mcp.CallToolResult, error) {
 	defer func() { _ = response.Body.Close() }()
 
-	responseBody, err := io.ReadAll(io.LimitReader(response.Body, maxProxyResponseSize))
+	responseBody, err := io.ReadAll(io.LimitReader(response.Body, maxProxyResponseSize+1))
 	if err != nil {
 		return mcp.NewToolResultErrorFromErr(fmt.Sprintf("failed to read %s API response", apiName), err), nil
+	}
+	if int64(len(responseBody)) > maxProxyResponseSize {
+		return mcp.NewToolResultError(
+			fmt.Sprintf("%s API response exceeds the %d byte limit", apiName, maxProxyResponseSize),
+		), nil
 	}
 
 	return mcp.NewToolResultText(string(responseBody)), nil

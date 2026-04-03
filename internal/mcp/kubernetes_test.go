@@ -814,7 +814,7 @@ func TestHandleGetKubernetesConfig(t *testing.T) {
 	tests := []struct {
 		name             string
 		inputParams      map[string]any
-		mockConfig       interface{}
+		mockConfig       any
 		mockErr          error
 		expectedErrorMsg string
 		expectedResult   string
@@ -846,7 +846,7 @@ func TestHandleGetKubernetesConfig(t *testing.T) {
 		{
 			name:        "successful config retrieval as map",
 			inputParams: map[string]any{"environmentId": float64(1)},
-			mockConfig: map[string]interface{}{
+			mockConfig: map[string]any{
 				"apiVersion": "v1",
 				"kind":       "Config",
 			},

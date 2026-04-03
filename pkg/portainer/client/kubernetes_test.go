@@ -241,14 +241,14 @@ func TestGetKubernetesConfig(t *testing.T) {
 	tests := []struct {
 		name          string
 		envID         int
-		mockResult    interface{}
+		mockResult    any
 		mockError     error
 		expectedError bool
 	}{
 		{
 			name:       "successful retrieval",
 			envID:      1,
-			mockResult: map[string]interface{}{"apiVersion": "v1", "kind": "Config"},
+			mockResult: map[string]any{"apiVersion": "v1", "kind": "Config"},
 		},
 		{
 			name:          "API error",

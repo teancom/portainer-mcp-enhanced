@@ -116,7 +116,7 @@ func TestHandleUpdateSettings(t *testing.T) {
 				},
 			},
 			setupMock: func(m *MockPortainerClient) {
-				m.On("UpdateSettings", map[string]interface{}{"enableEdgeComputeFeatures": true}).Return(nil)
+				m.On("UpdateSettings", map[string]any{"enableEdgeComputeFeatures": true}).Return(nil)
 			},
 			expectError: false,
 		},
@@ -154,7 +154,7 @@ func TestHandleUpdateSettings(t *testing.T) {
 				},
 			},
 			setupMock: func(m *MockPortainerClient) {
-				m.On("UpdateSettings", map[string]interface{}{"enableEdgeComputeFeatures": false}).Return(assert.AnError)
+				m.On("UpdateSettings", map[string]any{"enableEdgeComputeFeatures": false}).Return(assert.AnError)
 			},
 			expectError:   true,
 			errorContains: "failed to update settings",

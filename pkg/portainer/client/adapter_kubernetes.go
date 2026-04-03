@@ -49,7 +49,7 @@ func (a *portainerAPIAdapter) GetKubernetesNamespaces(environmentId int64) ([]*a
 }
 
 // GetKubernetesConfig retrieves the Kubernetes config for a specific environment.
-func (a *portainerAPIAdapter) GetKubernetesConfig(environmentId int64) (interface{}, error) {
+func (a *portainerAPIAdapter) GetKubernetesConfig(environmentId int64) (any, error) {
 	params := kubernetes.NewGetKubernetesConfigParams().WithIds([]int64{environmentId})
 	resp, err := a.swagger.Kubernetes.GetKubernetesConfig(params, nil)
 	if err != nil {

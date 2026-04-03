@@ -173,13 +173,13 @@ func TestMetaToolReadOnlyActionFiltering(t *testing.T) {
 	actionProp, ok := envTool.InputSchema.Properties["action"]
 	require.True(t, ok, "action property should exist")
 
-	actionMap, ok := actionProp.(map[string]interface{})
+	actionMap, ok := actionProp.(map[string]any)
 	require.True(t, ok, "action property should be a map")
 
 	enumRaw, ok := actionMap["enum"]
 	require.True(t, ok, "action should have enum")
 
-	enumSlice, ok := enumRaw.([]interface{})
+	enumSlice, ok := enumRaw.([]any)
 	require.True(t, ok, "enum should be a slice")
 
 	// Verify that write-only actions are excluded
@@ -271,42 +271,42 @@ func TestMakeMetaHandlerRouting(t *testing.T) {
 
 	tests := []struct {
 		name           string
-		args           map[string]interface{}
+		args           map[string]any
 		expectedAction string
 		expectError    bool
 		errorContains  string
 	}{
 		{
 			name:           "routes to action_one",
-			args:           map[string]interface{}{"action": "action_one"},
+			args:           map[string]any{"action": "action_one"},
 			expectedAction: "action_one",
 		},
 		{
 			name:           "routes to action_two",
-			args:           map[string]interface{}{"action": "action_two"},
+			args:           map[string]any{"action": "action_two"},
 			expectedAction: "action_two",
 		},
 		{
 			name:          "missing action parameter",
-			args:          map[string]interface{}{},
+			args:          map[string]any{},
 			expectError:   true,
 			errorContains: "missing required parameter: action",
 		},
 		{
 			name:          "empty action",
-			args:          map[string]interface{}{"action": ""},
+			args:          map[string]any{"action": ""},
 			expectError:   true,
 			errorContains: "non-empty string",
 		},
 		{
 			name:          "unknown action",
-			args:          map[string]interface{}{"action": "nonexistent"},
+			args:          map[string]any{"action": "nonexistent"},
 			expectError:   true,
 			errorContains: "unknown action 'nonexistent'",
 		},
 		{
 			name:          "non-string action",
-			args:          map[string]interface{}{"action": 42},
+			args:          map[string]any{"action": 42},
 			expectError:   true,
 			errorContains: "non-empty string",
 		},
@@ -317,8 +317,8 @@ func TestMakeMetaHandlerRouting(t *testing.T) {
 			calledAction = ""
 
 			req := mcp.CallToolRequest{}
-			reqBytes, _ := json.Marshal(map[string]interface{}{
-				"params": map[string]interface{}{
+			reqBytes, _ := json.Marshal(map[string]any{
+				"params": map[string]any{
 					"name":      "test_tool",
 					"arguments": tt.args,
 				},
@@ -354,13 +354,13 @@ func TestMetaToolHandlerIntegration(t *testing.T) {
 	s.RegisterMetaTools()
 
 	// Call the meta-tool through the MCP protocol
-	callReq := map[string]interface{}{
+	callReq := map[string]any{
 		"jsonrpc": "2.0",
 		"id":      2,
 		"method":  "tools/call",
-		"params": map[string]interface{}{
+		"params": map[string]any{
 			"name": "manage_users",
-			"arguments": map[string]interface{}{
+			"arguments": map[string]any{
 				"action": "list_users",
 			},
 		},
@@ -454,13 +454,13 @@ func TestWriteActionRejectedInReadOnlyMode(t *testing.T) {
 
 	// Try to call "create_user" on manage_users — this action should be
 	// filtered out in read-only mode.
-	callReq := map[string]interface{}{
+	callReq := map[string]any{
 		"jsonrpc": "2.0",
 		"id":      3,
 		"method":  "tools/call",
-		"params": map[string]interface{}{
+		"params": map[string]any{
 			"name": "manage_users",
-			"arguments": map[string]interface{}{
+			"arguments": map[string]any{
 				"action": "create_user",
 			},
 		},
@@ -490,7 +490,7 @@ func TestWriteActionRejectedInReadOnlyMode(t *testing.T) {
 // TestMakeMetaHandlerForwardsRequest verifies that makeMetaHandler passes
 // the full request (including all arguments) to the sub-handler.
 func TestMakeMetaHandlerForwardsRequest(t *testing.T) {
-	var receivedArgs map[string]interface{}
+	var receivedArgs map[string]any
 	handler := func(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		receivedArgs = req.GetArguments()
 		return mcp.NewToolResultText("ok"), nil
@@ -501,10 +501,10 @@ func TestMakeMetaHandlerForwardsRequest(t *testing.T) {
 	})
 
 	req := mcp.CallToolRequest{}
-	reqBytes, _ := json.Marshal(map[string]interface{}{
-		"params": map[string]interface{}{
+	reqBytes, _ := json.Marshal(map[string]any{
+		"params": map[string]any{
 			"name": "test_tool",
-			"arguments": map[string]interface{}{
+			"arguments": map[string]any{
 				"action":   "do_thing",
 				"extra_id": 42,
 				"name":     "test-value",

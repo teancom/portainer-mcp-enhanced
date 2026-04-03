@@ -100,7 +100,7 @@ type UserClient interface {
 // Used by: settings.go, ssl.go
 type SettingsClient interface {
 	GetSettings() (models.PortainerSettings, error)
-	UpdateSettings(settingsJSON map[string]interface{}) error
+	UpdateSettings(settingsJSON map[string]any) error
 	GetPublicSettings() (models.PublicSettings, error)
 	GetSSLSettings() (models.SSLSettings, error)
 	UpdateSSLSettings(cert, key string, httpEnabled *bool) error
@@ -132,7 +132,7 @@ type KubernetesClient interface {
 	ProxyKubernetesRequest(opts models.KubernetesProxyRequestOptions) (*http.Response, error)
 	GetKubernetesDashboard(environmentId int) (models.KubernetesDashboard, error)
 	GetKubernetesNamespaces(environmentId int) ([]models.KubernetesNamespace, error)
-	GetKubernetesConfig(environmentId int) (interface{}, error)
+	GetKubernetesConfig(environmentId int) (any, error)
 }
 
 // RegistryClient manages container registries.

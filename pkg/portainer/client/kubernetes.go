@@ -80,9 +80,9 @@ func (c *PortainerClient) GetKubernetesNamespaces(environmentId int) ([]models.K
 //   - environmentId: The ID of the environment
 //
 // Returns:
-//   - The kubeconfig content as an interface{}
+//   - The kubeconfig content as an any
 //   - An error if the operation fails
-func (c *PortainerClient) GetKubernetesConfig(environmentId int) (interface{}, error) {
+func (c *PortainerClient) GetKubernetesConfig(environmentId int) (any, error) {
 	config, err := c.cli.GetKubernetesConfig(int64(environmentId))
 	if err != nil {
 		return nil, fmt.Errorf("failed to get kubernetes config: %w", err)
