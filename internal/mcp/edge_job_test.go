@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
 )
 
 // TestHandleListEdgeJobs verifies the HandleListEdgeJobs MCP tool handler.
@@ -311,9 +312,10 @@ func TestHandleCreateEdgeJob(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mockClient := &MockPortainerClient{}
-			if tt.name == "successful creation" {
+			switch tt.name {
+			case "successful creation":
 				mockClient.On("CreateEdgeJob", "My Job", "* * * * *", "#!/bin/bash\necho hello", []int{1, 2}, []int{3}, true).Return(tt.mockID, tt.mockError)
-			} else if tt.name == "api error" {
+			case "api error":
 				mockClient.On("CreateEdgeJob", "Fail", "0 0 * * *", "content", []int{}, []int{}, false).Return(tt.mockID, tt.mockError)
 			}
 

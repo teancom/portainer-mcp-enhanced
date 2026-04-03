@@ -13,10 +13,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
 )
 
 // generateTestCertAndKey creates a self-signed certificate and private key in PEM format for testing.

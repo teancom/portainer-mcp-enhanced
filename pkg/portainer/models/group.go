@@ -1,8 +1,9 @@
 package models
 
 import (
-	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/utils"
 	apimodels "github.com/portainer/client-api-go/v2/pkg/models"
+
+	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/utils"
 )
 
 // Group represents a Portainer edge group used to organize edge environments.

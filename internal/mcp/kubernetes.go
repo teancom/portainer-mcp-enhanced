@@ -2,14 +2,14 @@ package mcp
 
 import (
 	"context"
-	"net/url"
 	"strings"
+
+	"github.com/mark3labs/mcp-go/mcp"
+	"github.com/mark3labs/mcp-go/server"
 
 	"github.com/jmrplens/portainer-mcp-enhanced/internal/k8sutil"
 	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
 	"github.com/jmrplens/portainer-mcp-enhanced/pkg/toolgen"
-	"github.com/mark3labs/mcp-go/mcp"
-	"github.com/mark3labs/mcp-go/server"
 )
 
 // AddKubernetesProxyFeatures registers the Kubernetes proxy and resource management tools on the MCP server.
@@ -41,11 +41,7 @@ func (s *PortainerMCPServer) HandleKubernetesProxyStripped() server.ToolHandlerF
 		if !strings.HasPrefix(kubernetesAPIPath, "/") {
 			return mcp.NewToolResultError("kubernetesAPIPath must start with a leading slash"), nil
 		}
-		decoded, err := url.PathUnescape(kubernetesAPIPath)
-		if err != nil {
-			return mcp.NewToolResultError("kubernetesAPIPath contains invalid URL encoding"), nil
-		}
-		if strings.Contains(decoded, "..") {
+		if containsPathTraversal(kubernetesAPIPath) {
 			return mcp.NewToolResultError("kubernetesAPIPath must not contain path traversal sequences"), nil
 		}
 

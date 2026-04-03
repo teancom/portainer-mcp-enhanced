@@ -5,11 +5,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
-	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/utils"
 	apimodels "github.com/portainer/client-api-go/v2/pkg/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+
+	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
+	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/utils"
 )
 
 // TestGetStacks verifies get stacks behavior.

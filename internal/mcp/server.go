@@ -8,12 +8,13 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/jmrplens/portainer-mcp-enhanced/internal/tooldef"
-	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/client"
-	"github.com/jmrplens/portainer-mcp-enhanced/pkg/toolgen"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
 	"github.com/rs/zerolog/log"
+
+	"github.com/jmrplens/portainer-mcp-enhanced/internal/tooldef"
+	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/client"
+	"github.com/jmrplens/portainer-mcp-enhanced/pkg/toolgen"
 )
 
 const (

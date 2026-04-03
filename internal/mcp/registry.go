@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/jmrplens/portainer-mcp-enhanced/pkg/toolgen"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
+
+	"github.com/jmrplens/portainer-mcp-enhanced/pkg/toolgen"
 )
 
 // AddRegistryFeatures registers the Docker registry management tools on the MCP server.

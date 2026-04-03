@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/jmrplens/portainer-mcp-enhanced/pkg/toolgen"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
+
+	"github.com/jmrplens/portainer-mcp-enhanced/pkg/toolgen"
 )
 
 // AddSettingsFeatures registers the Portainer settings management tools on the MCP server.

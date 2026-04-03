@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
 )
 
 // TestHandleListCustomTemplates verifies the HandleListCustomTemplates MCP tool handler.
@@ -346,9 +347,10 @@ func TestHandleCreateCustomTemplate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mockClient := &MockPortainerClient{}
-			if tt.name == "successful creation" {
+			switch tt.name {
+			case "successful creation":
 				mockClient.On("CreateCustomTemplate", "My Template", "A template", "A note", "https://example.com/logo.png", "version: '3'", 1, 2).Return(tt.mockID, tt.mockError)
-			} else if tt.name == "api error" {
+			case "api error":
 				mockClient.On("CreateCustomTemplate", "Fail", "Fail", "", "", "content", 1, 2).Return(tt.mockID, tt.mockError)
 			}
 

@@ -5,28 +5,16 @@ import (
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"github.com/portainer/client-api-go/v2/pkg/client/roles"
 	apimodels "github.com/portainer/client-api-go/v2/pkg/models"
 )
 
-// ListRoles lists all roles.
-func (a *portainerAPIAdapter) ListRoles() ([]*apimodels.PortainereeRole, error) {
-	params := roles.NewRoleListParams()
-	resp, err := a.swagger.Roles.RoleList(params, nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to list roles: %w", err)
-	}
-	return resp.Payload, nil
-}
-
-// GetMOTD retrieves the message of the day.
-func (a *portainerAPIAdapter) GetMOTD() (map[string]any, error) {
-	// Use raw HTTP to avoid SDK Hash type mismatch
-	// (SDK defines Hash as []int64, but newer API versions return a string).
+// GetDockerDashboard retrieves the Docker dashboard data for a specific environment.
+// Uses raw HTTP GET because the SDK sends POST but newer Portainer versions require GET.
+func (a *portainerAPIAdapter) GetDockerDashboard(environmentId int64) (*apimodels.DockerDashboardResponse, error) {
 	op := &runtime.ClientOperation{
-		ID:                 "MOTD",
+		ID:                 "DockerDashboard",
 		Method:             "GET",
-		PathPattern:        "/motd",
+		PathPattern:        fmt.Sprintf("/docker/%d/dashboard", environmentId),
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{a.scheme},
@@ -35,16 +23,16 @@ func (a *portainerAPIAdapter) GetMOTD() (map[string]any, error) {
 		}),
 		AuthInfo: a.httpTransport.DefaultAuthentication,
 		Reader: runtime.ClientResponseReaderFunc(func(resp runtime.ClientResponse, consumer runtime.Consumer) (any, error) {
-			var result map[string]any
+			var result apimodels.DockerDashboardResponse
 			if err := consumer.Consume(resp.Body(), &result); err != nil {
 				return nil, err
 			}
-			return result, nil
+			return &result, nil
 		}),
 	}
 	res, err := a.httpTransport.Submit(op)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get MOTD: %w", err)
+		return nil, fmt.Errorf("failed to get docker dashboard: %w", err)
 	}
-	return res.(map[string]any), nil
+	return res.(*apimodels.DockerDashboardResponse), nil
 }

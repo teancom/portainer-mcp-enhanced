@@ -448,6 +448,19 @@ func TestParseProxyParams(t *testing.T) {
 		assert.True(t, toolErr.IsError)
 	})
 
+	t.Run("double-encoded path traversal returns tool error", func(t *testing.T) {
+		request := CreateMCPRequest(map[string]any{
+			"environmentId": float64(1),
+			"method":        "GET",
+			"dockerAPIPath": "/containers/%252e%252e/secrets",
+		})
+
+		params, toolErr := parseProxyParams(request, "dockerAPIPath")
+		assert.Nil(t, params)
+		assert.NotNil(t, toolErr)
+		assert.True(t, toolErr.IsError)
+	})
+
 	t.Run("API path without leading slash returns tool error", func(t *testing.T) {
 		request := CreateMCPRequest(map[string]any{
 			"environmentId": float64(1),

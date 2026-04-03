@@ -8,6 +8,7 @@ import (
 
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // TestLoadToolsFromYAML verifies load tools from y a m l behavior.
@@ -303,12 +304,13 @@ tools:
 	t.Run("does not write to filesystem", func(t *testing.T) {
 		// Run in a read-only temp dir to prove no filesystem writes happen
 		readOnlyDir := t.TempDir()
-		os.Chmod(readOnlyDir, 0555)
-		defer os.Chmod(readOnlyDir, 0755)
+		require.NoError(t, os.Chmod(readOnlyDir, 0555))
+		defer func() { _ = os.Chmod(readOnlyDir, 0755) }()
 
-		origDir, _ := os.Getwd()
-		os.Chdir(readOnlyDir)
-		defer os.Chdir(origDir)
+		origDir, err := os.Getwd()
+		require.NoError(t, err)
+		require.NoError(t, os.Chdir(readOnlyDir))
+		defer func() { _ = os.Chdir(origDir) }()
 
 		tools, err := LoadToolsFromBytes(yamlContent, "v1.0")
 		assert.NoError(t, err)

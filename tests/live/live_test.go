@@ -7,11 +7,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/jmrplens/portainer-mcp-enhanced/internal/mcp"
 	mcpgo "github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/jmrplens/portainer-mcp-enhanced/internal/mcp"
 )
 
 // callHandler is a helper to invoke an MCP handler and return the text content

@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
 )
 
 // TestHandleGetBackupStatus verifies the HandleGetBackupStatus MCP tool handler.
@@ -211,6 +212,7 @@ func TestHandleBackupToS3(t *testing.T) {
 		args        map[string]any
 		mockError   error
 		expectError bool
+		expectMsg   string
 	}{
 		{
 			name: "successful backup to S3",
@@ -226,6 +228,7 @@ func TestHandleBackupToS3(t *testing.T) {
 			name:        "missing accessKeyID parameter",
 			args:        map[string]any{},
 			expectError: true,
+			expectMsg:   "accessKeyID",
 		},
 		{
 			name: "missing secretAccessKey parameter",
@@ -233,6 +236,7 @@ func TestHandleBackupToS3(t *testing.T) {
 				"accessKeyID": "AKID123",
 			},
 			expectError: true,
+			expectMsg:   "secretAccessKey",
 		},
 		{
 			name: "missing bucketName parameter",
@@ -241,6 +245,7 @@ func TestHandleBackupToS3(t *testing.T) {
 				"secretAccessKey": "secret",
 			},
 			expectError: true,
+			expectMsg:   "bucketName",
 		},
 		{
 			name: "invalid region type",
@@ -251,6 +256,7 @@ func TestHandleBackupToS3(t *testing.T) {
 				"region":          123,
 			},
 			expectError: true,
+			expectMsg:   "region",
 		},
 		{
 			name: "invalid s3CompatibleHost type",
@@ -261,6 +267,7 @@ func TestHandleBackupToS3(t *testing.T) {
 				"s3CompatibleHost": 123,
 			},
 			expectError: true,
+			expectMsg:   "s3CompatibleHost",
 		},
 		{
 			name: "invalid password type",
@@ -271,6 +278,7 @@ func TestHandleBackupToS3(t *testing.T) {
 				"password":        123,
 			},
 			expectError: true,
+			expectMsg:   "password",
 		},
 		{
 			name: "invalid cronRule type",
@@ -281,6 +289,7 @@ func TestHandleBackupToS3(t *testing.T) {
 				"cronRule":        123,
 			},
 			expectError: true,
+			expectMsg:   "cronRule",
 		},
 		{
 			name: "api error",
@@ -291,6 +300,7 @@ func TestHandleBackupToS3(t *testing.T) {
 			},
 			mockError:   fmt.Errorf("api error"),
 			expectError: true,
+			expectMsg:   "api error",
 		},
 	}
 
@@ -326,6 +336,11 @@ func TestHandleBackupToS3(t *testing.T) {
 			if tt.expectError {
 				assert.NoError(t, err)
 				assert.True(t, result.IsError)
+				textContent, ok := result.Content[0].(mcp.TextContent)
+				assert.True(t, ok)
+				if tt.expectMsg != "" {
+					assert.Contains(t, textContent.Text, tt.expectMsg)
+				}
 			} else {
 				assert.NoError(t, err)
 				textContent, ok := result.Content[0].(mcp.TextContent)
@@ -345,6 +360,7 @@ func TestHandleRestoreFromS3(t *testing.T) {
 		args        map[string]any
 		mockError   error
 		expectError bool
+		expectMsg   string
 	}{
 		{
 			name: "successful restore from S3",
@@ -360,6 +376,7 @@ func TestHandleRestoreFromS3(t *testing.T) {
 			name:        "missing accessKeyID parameter",
 			args:        map[string]any{},
 			expectError: true,
+			expectMsg:   "accessKeyID",
 		},
 		{
 			name: "missing secretAccessKey parameter",
@@ -367,6 +384,7 @@ func TestHandleRestoreFromS3(t *testing.T) {
 				"accessKeyID": "AKID123",
 			},
 			expectError: true,
+			expectMsg:   "secretAccessKey",
 		},
 		{
 			name: "missing bucketName parameter",
@@ -375,6 +393,7 @@ func TestHandleRestoreFromS3(t *testing.T) {
 				"secretAccessKey": "secret",
 			},
 			expectError: true,
+			expectMsg:   "bucketName",
 		},
 		{
 			name: "missing filename parameter",
@@ -384,6 +403,7 @@ func TestHandleRestoreFromS3(t *testing.T) {
 				"bucketName":      "my-bucket",
 			},
 			expectError: true,
+			expectMsg:   "filename",
 		},
 		{
 			name: "invalid password type",
@@ -395,6 +415,7 @@ func TestHandleRestoreFromS3(t *testing.T) {
 				"password":        123,
 			},
 			expectError: true,
+			expectMsg:   "password",
 		},
 		{
 			name: "invalid region type",
@@ -406,6 +427,7 @@ func TestHandleRestoreFromS3(t *testing.T) {
 				"region":          123,
 			},
 			expectError: true,
+			expectMsg:   "region",
 		},
 		{
 			name: "invalid s3CompatibleHost type",
@@ -417,6 +439,7 @@ func TestHandleRestoreFromS3(t *testing.T) {
 				"s3CompatibleHost": 123,
 			},
 			expectError: true,
+			expectMsg:   "s3CompatibleHost",
 		},
 		{
 			name: "api error",
@@ -428,6 +451,7 @@ func TestHandleRestoreFromS3(t *testing.T) {
 			},
 			mockError:   fmt.Errorf("api error"),
 			expectError: true,
+			expectMsg:   "api error",
 		},
 	}
 
@@ -470,6 +494,11 @@ func TestHandleRestoreFromS3(t *testing.T) {
 			if tt.expectError {
 				assert.NoError(t, err)
 				assert.True(t, result.IsError)
+				textContent, ok := result.Content[0].(mcp.TextContent)
+				assert.True(t, ok)
+				if tt.expectMsg != "" {
+					assert.Contains(t, textContent.Text, tt.expectMsg)
+				}
 			} else {
 				assert.NoError(t, err)
 				textContent, ok := result.Content[0].(mcp.TextContent)

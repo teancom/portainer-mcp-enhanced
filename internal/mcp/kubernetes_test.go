@@ -7,10 +7,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+
+	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
 )
 
 // TestHandleKubernetesProxy_ParameterValidation verifies the HandleKubernetesProxy_ParameterValidation MCP tool handler.

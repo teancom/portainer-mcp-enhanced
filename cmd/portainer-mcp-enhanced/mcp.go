@@ -6,8 +6,9 @@ package main
 import (
 	"flag"
 
-	"github.com/jmrplens/portainer-mcp-enhanced/internal/mcp"
 	"github.com/rs/zerolog/log"
+
+	"github.com/jmrplens/portainer-mcp-enhanced/internal/mcp"
 )
 
 var (

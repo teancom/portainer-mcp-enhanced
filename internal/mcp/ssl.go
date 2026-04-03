@@ -6,9 +6,10 @@ import (
 	"encoding/pem"
 	"fmt"
 
-	"github.com/jmrplens/portainer-mcp-enhanced/pkg/toolgen"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
+
+	"github.com/jmrplens/portainer-mcp-enhanced/pkg/toolgen"
 )
 
 // AddSSLFeatures registers SSL-related tools.

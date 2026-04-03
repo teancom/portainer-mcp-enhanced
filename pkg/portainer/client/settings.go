@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
 	apimodels "github.com/portainer/client-api-go/v2/pkg/models"
+
+	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
 )
 
 // GetSettings retrieves settings.

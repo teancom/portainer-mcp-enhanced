@@ -3,8 +3,9 @@ package client
 import (
 	"fmt"
 
-	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
 	apimodels "github.com/portainer/client-api-go/v2/pkg/models"
+
+	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
 )
 
 // GetRegistries retrieves all registries from the Portainer server.

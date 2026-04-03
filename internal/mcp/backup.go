@@ -3,10 +3,11 @@ package mcp
 import (
 	"context"
 
-	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
-	"github.com/jmrplens/portainer-mcp-enhanced/pkg/toolgen"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
+
+	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
+	"github.com/jmrplens/portainer-mcp-enhanced/pkg/toolgen"
 )
 
 // AddBackupFeatures registers the backup and restore management tools on the MCP server.

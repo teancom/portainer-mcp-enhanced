@@ -8,9 +8,10 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/jmrplens/portainer-mcp-enhanced/pkg/toolgen"
 	"github.com/mark3labs/mcp-go/mcp"
 	"gopkg.in/yaml.v3"
+
+	"github.com/jmrplens/portainer-mcp-enhanced/pkg/toolgen"
 )
 
 // jsonResult marshals the given object to JSON and returns it as an MCP tool result.
@@ -123,6 +124,26 @@ func parseKeyValueMap(items []any) (map[string]string, error) {
 	return resultMap, nil
 }
 
+// containsPathTraversal checks whether a URL path contains ".." traversal sequences,
+// decoding repeatedly to defeat double/triple URL encoding (e.g. %252e%252e).
+func containsPathTraversal(path string) bool {
+	prev := path
+	for {
+		decoded, err := url.PathUnescape(prev)
+		if err != nil {
+			// Treat unparseable encoding as suspicious.
+			return true
+		}
+		if strings.Contains(decoded, "..") {
+			return true
+		}
+		if decoded == prev {
+			return false
+		}
+		prev = decoded
+	}
+}
+
 // proxyParams holds the parsed parameters common to full proxy API requests
 // (Docker and Kubernetes).
 type proxyParams struct {
@@ -164,11 +185,7 @@ func parseProxyParams(request mcp.CallToolRequest, pathParamName string) (*proxy
 	if !strings.HasPrefix(apiPath, "/") {
 		return nil, mcp.NewToolResultError(fmt.Sprintf("%s must start with a leading slash", pathParamName))
 	}
-	decoded, err := url.PathUnescape(apiPath)
-	if err != nil {
-		return nil, mcp.NewToolResultError(fmt.Sprintf("%s contains invalid URL encoding", pathParamName))
-	}
-	if strings.Contains(decoded, "..") {
+	if containsPathTraversal(apiPath) {
 		return nil, mcp.NewToolResultError(fmt.Sprintf("%s must not contain path traversal sequences", pathParamName))
 	}
 
@@ -208,7 +225,7 @@ func parseProxyParams(request mcp.CallToolRequest, pathParamName string) (*proxy
 // readProxyResponse reads a proxy HTTP response body up to maxProxyResponseSize
 // and returns it as an MCP tool result.
 func readProxyResponse(response *http.Response, apiName string) (*mcp.CallToolResult, error) {
-	defer response.Body.Close()
+	defer func() { _ = response.Body.Close() }()
 
 	responseBody, err := io.ReadAll(io.LimitReader(response.Body, maxProxyResponseSize))
 	if err != nil {

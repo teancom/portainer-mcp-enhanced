@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/jmrplens/portainer-mcp-enhanced/pkg/portainer/models"
 )
 
 // TestHandleListRegistries verifies the HandleListRegistries MCP tool handler.
@@ -272,9 +273,10 @@ func TestHandleCreateRegistry(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mockClient := &MockPortainerClient{}
-			if tt.name == "successful creation" {
+			switch tt.name {
+			case "successful creation":
 				mockClient.On("CreateRegistry", "DockerHub", 6, "docker.io", true, "user1", "pass1", "").Return(tt.mockID, tt.mockError)
-			} else if tt.name == "api error" {
+			case "api error":
 				mockClient.On("CreateRegistry", "Fail", 3, "fail.example.com", false, "", "", "").Return(tt.mockID, tt.mockError)
 			}
 
