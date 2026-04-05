@@ -22,7 +22,9 @@ func (s *PortainerMCPServer) RegisterMetaTools() {
 }
 
 // registerOneMetaTool builds a single meta-tool from its definition,
-// filtering actions by read-only mode, and registers it.
+// filtering actions by read-only mode, and registers it. It merges parameter
+// schemas from the granular tools (if available) into the meta-tool's schema
+// so that LLM callers can discover all available parameters.
 func (s *PortainerMCPServer) registerOneMetaTool(def metaToolDef) {
 	// Filter actions based on read-only mode
 	available := make([]metaAction, 0, len(def.actions))
@@ -71,8 +73,51 @@ func (s *PortainerMCPServer) registerOneMetaTool(def metaToolDef) {
 		),
 	)
 
+	// Merge parameters from granular tools into the meta-tool schema.
+	// This allows LLM callers to discover all available parameters for all actions
+	// in a single meta-tool, making the schema more complete.
+	if s.tools != nil && len(s.tools) > 0 {
+		mergeParametersFromGranularTools(&tool, available, s.tools)
+	}
+
 	// Register the meta-tool with a routing handler
 	s.srv.AddTool(tool, makeMetaHandler(def.name, handlers))
+}
+
+// mergeParametersFromGranularTools extracts parameter schemas from granular
+// tools and merges them into the meta-tool's InputSchema. Parameters are
+// merged from all available actions, so LLM callers see all possible
+// parameters they might need to pass based on the chosen action.
+//
+// If the same parameter name appears in multiple actions, it is only added
+// once (first occurrence wins). The tools map is expected to have keys
+// matching the action names in camelCase.
+func mergeParametersFromGranularTools(tool *mcp.Tool, available []metaAction, tools map[string]mcp.Tool) {
+	if tool.InputSchema.Properties == nil {
+		tool.InputSchema.Properties = make(map[string]any)
+	}
+
+	// Iterate through all available actions and merge their parameters
+	for _, action := range available {
+		granularTool, ok := tools[action.name]
+		if !ok {
+			// Skip if the tool is not found in the tools map. This can happen
+			// in test setups where tools are not loaded.
+			continue
+		}
+
+		// Extract properties from the granular tool's input schema
+		if granularTool.InputSchema.Properties == nil {
+			continue
+		}
+
+		// Merge each property from the granular tool, skipping duplicates
+		for propName, propSchema := range granularTool.InputSchema.Properties {
+			if _, exists := tool.InputSchema.Properties[propName]; !exists {
+				tool.InputSchema.Properties[propName] = propSchema
+			}
+		}
+	}
 }
 
 // makeMetaHandler creates a ToolHandlerFunc that routes to the correct

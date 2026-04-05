@@ -184,18 +184,18 @@ func TestMetaToolReadOnlyActionFiltering(t *testing.T) {
 
 	// Verify that write-only actions are excluded
 	writeActions := map[string]bool{
-		"delete_environment":                    true,
-		"snapshot_environment":                  true,
-		"snapshot_all_environments":             true,
-		"update_environment_tags":               true,
-		"update_environment_user_accesses":      true,
-		"update_environment_team_accesses":      true,
-		"create_environment_group":              true,
-		"update_environment_group_name":         true,
-		"update_environment_group_environments": true,
-		"update_environment_group_tags":         true,
-		"create_environment_tag":                true,
-		"delete_environment_tag":                true,
+		"deleteEnvironment":                    true,
+		"snapshotEnvironment":                  true,
+		"snapshotAllEnvironments":             true,
+		"updateEnvironmentTags":               true,
+		"updateEnvironmentUserAccesses":      true,
+		"updateEnvironmentTeamAccesses":      true,
+		"createEnvironmentGroup":              true,
+		"updateEnvironmentGroupName":         true,
+		"updateEnvironmentGroupEnvironments": true,
+		"updateEnvironmentGroupTags":         true,
+		"createEnvironmentTag":                true,
+		"deleteEnvironmentTag":                true,
 	}
 
 	for _, v := range enumSlice {
@@ -207,10 +207,10 @@ func TestMetaToolReadOnlyActionFiltering(t *testing.T) {
 
 	// Verify read actions ARE present
 	readActions := []string{
-		"list_environments",
-		"get_environment",
-		"list_environment_groups",
-		"list_environment_tags",
+		"listEnvironments",
+		"getEnvironment",
+		"listEnvironmentGroups",
+		"listEnvironmentTags",
 	}
 	enumStrings := make([]string, len(enumSlice))
 	for i, v := range enumSlice {
@@ -347,7 +347,7 @@ func TestMakeMetaHandlerRouting(t *testing.T) {
 func TestMetaToolHandlerIntegration(t *testing.T) {
 	s := newTestMetaServer(false)
 
-	// Mock the GetUsers method since we'll call manage_users with action "list_users"
+	// Mock the GetUsers method since we'll call manage_users with action "listUsers"
 	mockClient := s.cli.(*MockPortainerClient)
 	mockClient.On("GetUsers").Return([]models.User{}, nil)
 
@@ -361,7 +361,7 @@ func TestMetaToolHandlerIntegration(t *testing.T) {
 		"params": map[string]any{
 			"name": "manage_users",
 			"arguments": map[string]any{
-				"action": "list_users",
+				"action": "listUsers",
 			},
 		},
 	}
@@ -452,7 +452,7 @@ func TestWriteActionRejectedInReadOnlyMode(t *testing.T) {
 	s := newTestMetaServer(true)
 	s.RegisterMetaTools()
 
-	// Try to call "create_user" on manage_users — this action should be
+	// Try to call "createUser" on manage_users — this action should be
 	// filtered out in read-only mode.
 	callReq := map[string]any{
 		"jsonrpc": "2.0",
@@ -461,7 +461,7 @@ func TestWriteActionRejectedInReadOnlyMode(t *testing.T) {
 		"params": map[string]any{
 			"name": "manage_users",
 			"arguments": map[string]any{
-				"action": "create_user",
+				"action": "createUser",
 			},
 		},
 	}
@@ -529,72 +529,72 @@ func TestMakeMetaHandlerForwardsRequest(t *testing.T) {
 func TestMetaToolRegistryActionNames(t *testing.T) {
 	expected := map[string][]string{
 		"manage_environments": {
-			"list_environments", "get_environment", "delete_environment",
-			"snapshot_environment", "snapshot_all_environments",
-			"update_environment_tags", "update_environment_user_accesses",
-			"update_environment_team_accesses",
-			"list_environment_groups", "create_environment_group",
-			"update_environment_group_name", "update_environment_group_environments",
-			"update_environment_group_tags",
-			"list_environment_tags", "create_environment_tag", "delete_environment_tag",
+			"listEnvironments", "getEnvironment", "deleteEnvironment",
+			"snapshotEnvironment", "snapshotAllEnvironments",
+			"updateEnvironmentTags", "updateEnvironmentUserAccesses",
+			"updateEnvironmentTeamAccesses",
+			"listEnvironmentGroups", "createEnvironmentGroup",
+			"updateEnvironmentGroupName", "updateEnvironmentGroupEnvironments",
+			"updateEnvironmentGroupTags",
+			"listEnvironmentTags", "createEnvironmentTag", "deleteEnvironmentTag",
 		},
 		"manage_stacks": {
-			"list_stacks", "list_regular_stacks", "get_stack", "get_stack_file",
-			"inspect_stack_file", "create_stack", "update_stack", "delete_stack",
-			"update_stack_git", "redeploy_stack_git", "start_stack", "stop_stack",
-			"migrate_stack",
+			"listStacks", "listRegularStacks", "getStack", "getStackFile",
+			"inspectStackFile", "createStack", "updateStack", "deleteStack",
+			"updateStackGit", "redeployStackGit", "startStack", "stopStack",
+			"migrateStack",
 		},
 		"manage_access_groups": {
-			"list_access_groups", "create_access_group", "update_access_group_name",
-			"update_access_group_user_accesses", "update_access_group_team_accesses",
-			"add_environment_to_access_group", "remove_environment_from_access_group",
+			"listAccessGroups", "createAccessGroup", "updateAccessGroupName",
+			"updateAccessGroupUserAccesses", "updateAccessGroupTeamAccesses",
+			"addEnvironmentToAccessGroup", "removeEnvironmentFromAccessGroup",
 		},
 		"manage_users": {
-			"list_users", "get_user", "create_user", "delete_user", "update_user_role",
+			"listUsers", "getUser", "createUser", "deleteUser", "updateUserRole",
 		},
 		"manage_teams": {
-			"list_teams", "get_team", "create_team", "delete_team",
-			"update_team_name", "update_team_members",
+			"listTeams", "getTeam", "createTeam", "deleteTeam",
+			"updateTeamName", "updateTeamMembers",
 		},
 		"manage_docker": {
-			"get_docker_dashboard", "docker_proxy",
+			"getDockerDashboard", "dockerProxy",
 		},
 		"manage_kubernetes": {
-			"get_kubernetes_resource_stripped", "get_kubernetes_dashboard",
-			"list_kubernetes_namespaces", "get_kubernetes_config", "kubernetes_proxy",
+			"getKubernetesResourceStripped", "getKubernetesDashboard",
+			"listKubernetesNamespaces", "getKubernetesConfig", "kubernetesProxy",
 		},
 		"manage_helm": {
-			"list_helm_repositories", "search_helm_charts",
-			"list_helm_releases", "get_helm_release_history",
-			"add_helm_repository", "remove_helm_repository",
-			"install_helm_chart", "delete_helm_release",
+			"listHelmRepositories", "searchHelmCharts",
+			"listHelmReleases", "getHelmReleaseHistory",
+			"addHelmRepository", "removeHelmRepository",
+			"installHelmChart", "deleteHelmRelease",
 		},
 		"manage_registries": {
-			"list_registries", "get_registry", "create_registry",
-			"update_registry", "delete_registry",
+			"listRegistries", "getRegistry", "createRegistry",
+			"updateRegistry", "deleteRegistry",
 		},
 		"manage_templates": {
-			"list_custom_templates", "get_custom_template", "get_custom_template_file",
-			"create_custom_template", "delete_custom_template",
-			"list_app_templates", "get_app_template_file",
+			"listCustomTemplates", "getCustomTemplate", "getCustomTemplateFile",
+			"createCustomTemplate", "deleteCustomTemplate",
+			"listAppTemplates", "getAppTemplateFile",
 		},
 		"manage_backups": {
-			"get_backup_status", "get_backup_s3_settings",
-			"create_backup", "backup_to_s3", "restore_from_s3",
+			"getBackupStatus", "getBackupS3Settings",
+			"createBackup", "backupToS3", "restoreFromS3",
 		},
 		"manage_webhooks": {
-			"list_webhooks", "create_webhook", "delete_webhook",
+			"listWebhooks", "createWebhook", "deleteWebhook",
 		},
 		"manage_edge": {
-			"list_edge_jobs", "get_edge_job", "get_edge_job_file",
-			"create_edge_job", "delete_edge_job", "list_edge_update_schedules",
+			"listEdgeJobs", "getEdgeJob", "getEdgeJobFile",
+			"createEdgeJob", "deleteEdgeJob", "listEdgeUpdateSchedules",
 		},
 		"manage_settings": {
-			"get_settings", "get_public_settings", "update_settings",
-			"get_ssl_settings", "update_ssl_settings",
+			"getSettings", "getPublicSettings", "updateSettings",
+			"getSSLSettings", "updateSSLSettings",
 		},
 		"manage_system": {
-			"get_system_status", "list_roles", "get_motd",
+			"getSystemStatus", "listRoles", "getMOTD",
 			"authenticate", "logout",
 		},
 	}
@@ -682,4 +682,147 @@ func TestMetaToolDescriptionsListActions(t *testing.T) {
 			}
 		})
 	}
+}
+
+// TestMetaToolParameterMerging verifies that when a PortainerMCPServer has
+// tools loaded, the meta-tool's schema includes merged parameters from all
+// available granular tools. This allows LLM callers to see what parameters
+// are available without needing to inspect each granular tool separately.
+func TestMetaToolParameterMerging(t *testing.T) {
+	// Create a server with mock tools that have known parameter schemas
+	s := newTestMetaServer(false)
+
+	// Build mock tools with predefined parameter schemas
+	mockTools := map[string]mcp.Tool{
+		"listUsers": {
+			Name:        "listUsers",
+			Description: "List all users",
+			InputSchema: mcp.ToolInputSchema{
+				Type: "object",
+				Properties: map[string]any{
+					"environmentId": map[string]any{
+						"type":        "number",
+						"description": "Numeric environment ID",
+					},
+				},
+			},
+		},
+		"createUser": {
+			Name:        "createUser",
+			Description: "Create a new user",
+			InputSchema: mcp.ToolInputSchema{
+				Type: "object",
+				Properties: map[string]any{
+					"name": map[string]any{
+						"type":        "string",
+						"description": "Username",
+					},
+					"password": map[string]any{
+						"type":        "string",
+						"description": "User password",
+					},
+				},
+			},
+		},
+	}
+
+	s.tools = mockTools
+	s.RegisterMetaTools()
+
+	// Query tools/list to get the full schema of manage_users meta-tool
+	reqJSON := `{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}`
+	resp := s.srv.HandleMessage(context.Background(), json.RawMessage(reqJSON))
+
+	respBytes, err := json.Marshal(resp)
+	require.NoError(t, err)
+
+	var rpcResp struct {
+		Result struct {
+			Tools []mcp.Tool `json:"tools"`
+		} `json:"result"`
+	}
+	require.NoError(t, json.Unmarshal(respBytes, &rpcResp))
+
+	// Find manage_users and verify its schema includes parameters from all actions
+	var usersTool *mcp.Tool
+	for i, tool := range rpcResp.Result.Tools {
+		if tool.Name == "manage_users" {
+			usersTool = &rpcResp.Result.Tools[i]
+			break
+		}
+	}
+	require.NotNil(t, usersTool, "manage_users tool should exist")
+
+	// Verify that the meta-tool's schema now includes properties from both actions
+	props := usersTool.InputSchema.Properties
+	require.NotNil(t, props)
+
+	// Should have "action" parameter (always present)
+	assert.Contains(t, props, "action", "meta-tool should have action parameter")
+
+	// Should have parameters from listUsers action
+	assert.Contains(t, props, "environmentId",
+		"meta-tool should have environmentId parameter from listUsers action")
+
+	// Should have parameters from createUser action
+	assert.Contains(t, props, "name",
+		"meta-tool should have name parameter from createUser action")
+	assert.Contains(t, props, "password",
+		"meta-tool should have password parameter from createUser action")
+}
+
+// TestMetaToolParameterMergingWithMissingTools verifies that parameter
+// merging gracefully skips tools that are not found in the tools map.
+// This can happen in test setups where tools are not fully loaded.
+func TestMetaToolParameterMergingWithMissingTools(t *testing.T) {
+	s := newTestMetaServer(false)
+
+	// Set up a tools map with only one of the two tools available
+	s.tools = map[string]mcp.Tool{
+		"listUsers": {
+			Name:        "listUsers",
+			Description: "List all users",
+			InputSchema: mcp.ToolInputSchema{
+				Type: "object",
+				Properties: map[string]any{
+					"environmentId": map[string]any{
+						"type":        "number",
+						"description": "Numeric environment ID",
+					},
+				},
+			},
+		},
+		// createUser is NOT in the map
+	}
+
+	s.RegisterMetaTools()
+
+	// Query tools/list to verify the merge skipped the missing tool gracefully
+	reqJSON := `{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}`
+	resp := s.srv.HandleMessage(context.Background(), json.RawMessage(reqJSON))
+
+	respBytes, err := json.Marshal(resp)
+	require.NoError(t, err)
+
+	var rpcResp struct {
+		Result struct {
+			Tools []mcp.Tool `json:"tools"`
+		} `json:"result"`
+	}
+	require.NoError(t, json.Unmarshal(respBytes, &rpcResp))
+
+	// Find manage_users and verify it still registered successfully
+	var usersTool *mcp.Tool
+	for i, tool := range rpcResp.Result.Tools {
+		if tool.Name == "manage_users" {
+			usersTool = &rpcResp.Result.Tools[i]
+			break
+		}
+	}
+	require.NotNil(t, usersTool, "manage_users tool should exist despite missing createUser tool")
+
+	// Verify that the meta-tool includes the available tool's parameters
+	props := usersTool.InputSchema.Properties
+	assert.Contains(t, props, "action")
+	assert.Contains(t, props, "environmentId")
 }
